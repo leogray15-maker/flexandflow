@@ -45,6 +45,9 @@
     .btn-ghost:hover:not(:disabled){background:var(--charcoal);color:var(--cream)}
     .text-input{width:100%;font-size:1rem;font-family:var(--font-sans);padding:13px 16px;border:1.5px solid var(--sand);border-radius:12px;background:var(--cream);color:var(--charcoal);margin-bottom:14px}
     .text-input:focus{outline:none;border-color:var(--sage);background:var(--white)}
+    .pw-wrap{position:relative;margin-bottom:14px}
+    .pw-wrap .text-input{margin-bottom:0;padding-right:70px}
+    .pw-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--sage-dark);font-size:.82rem;font-weight:500;padding:8px 10px;cursor:pointer}
     .login-step{margin-top:4px}
     .msg{font-size:.9rem;margin-top:14px;min-height:1.2em}
     .msg.error{color:var(--terracotta)}
@@ -112,7 +115,10 @@
 
       <form id="loginForm" class="login-step">
         <input id="username" class="text-input" placeholder="Username" autocomplete="username" autocapitalize="none" />
-        <input id="password" class="text-input" type="password" placeholder="Password" autocomplete="current-password" />
+        <div class="pw-wrap">
+          <input id="password" class="text-input" type="password" placeholder="Password" autocomplete="current-password" />
+          <button type="button" id="togglePw" class="pw-toggle" aria-label="Show password">Show</button>
+        </div>
         <button id="loginBtn" type="submit" class="btn">Sign in</button>
       </form>
 

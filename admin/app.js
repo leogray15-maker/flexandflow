@@ -73,6 +73,16 @@ $('loginForm').addEventListener('submit', (e) => {
   login();
 });
 
+$('togglePw').addEventListener('click', () => {
+  const p = $('password');
+  const show = p.type === 'password';
+  p.type = show ? 'text' : 'password';
+  const btn = $('togglePw');
+  btn.textContent = show ? 'Hide' : 'Show';
+  btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  p.focus();
+});
+
 $('logoutBtn').addEventListener('click', async () => {
   await api('/api/auth/logout', { method: 'POST' });
   location.reload();

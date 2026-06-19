@@ -12,14 +12,15 @@ private CRM dashboard — all on free hosting.
   **Telegram text** to Kenna on every message.
 - **CRM dashboard** (`/admin`) — a mini CRM to read, search, mark
   (new / contacted / archived), reply to and delete enquiries.
-- **Passwordless login** — Kenna signs in with a 6-digit code sent to her Telegram.
+- **Username & password login** — Kenna signs in with credentials stored as
+  Vercel environment variables (no secrets in the repo).
 
 ## Tech (all free tiers)
 | Piece | Used for |
 |-------|----------|
 | **Vercel** | Hosting the site + serverless functions (`/api`) |
 | **Firebase / Firestore** | Storing messages |
-| **Telegram Bot API** | New-message alerts + login codes |
+| **Telegram Bot API** | New-message alerts to Kenna |
 
 No build step for the frontend; the only dependency is `firebase-admin` (installed
 automatically by Vercel).
@@ -32,8 +33,7 @@ api/
   contact.js                         → POST public: save message + Telegram alert
   messages.js                        → GET  protected: list enquiries
   messages/[id].js                   → PATCH/DELETE protected: status / remove
-  auth/request-code.js               → send login code via Telegram
-  auth/verify.js                     → verify code, start session
+  auth/login.js                      → check username/password, start session
   auth/logout.js, auth/me.js         → session helpers
 lib/                                 → firebase, telegram, auth helpers
 SETUP.md                             → step-by-step deployment guide

@@ -3,7 +3,7 @@
 This gets the website **live on Vercel** with:
 - a contact form that saves enquiries to **Firebase (Firestore)**,
 - a **Telegram text** to Kenna for every new message,
-- a private **CRM dashboard** at `/admin` she logs into with a Telegram code.
+- a private **CRM dashboard** at `/admin` she logs into with a **username & password**.
 
 Everything below is on a **free** plan. No credit card required.
 Set aside ~20–30 minutes. Do the steps in order.
@@ -14,16 +14,18 @@ Set aside ~20–30 minutes. Do the steps in order.
 | Page | URL | Who |
 |------|-----|-----|
 | Website | `https://your-site.vercel.app/` | Everyone |
-| CRM dashboard | `https://your-site.vercel.app/admin` | Kenna (login required) |
+| CRM dashboard | `https://your-site.vercel.app/admin` | Kenna (username + password) |
 
-You'll create **4 secrets** along the way. Keep them handy — you paste them into
+You'll create **6 secrets** along the way. Keep them handy — you paste them into
 Vercel at the end:
 
 ```
 FIREBASE_SERVICE_ACCOUNT   (a JSON blob from Firebase)
-TELEGRAM_BOT_TOKEN         (from Telegram's BotFather)
-TELEGRAM_CHAT_ID           (Kenna's Telegram chat id)
+TELEGRAM_BOT_TOKEN         (from Telegram's BotFather — for alerts)
+TELEGRAM_CHAT_ID           (Kenna's Telegram chat id — for alerts)
 SESSION_SECRET             (any long random string you make up)
+ADMIN_USERNAME             (the dashboard login username)
+ADMIN_PASSWORD             (the dashboard login password)
 ```
 
 ---
@@ -41,14 +43,15 @@ SESSION_SECRET             (any long random string you make up)
    - Open that file in any text editor and copy **everything** (the whole JSON,
      from `{` to `}`). This is your **`FIREBASE_SERVICE_ACCOUNT`** value.
 
-> The app creates the `messages` and `auth_codes` collections automatically —
+> The app creates the `messages` collection automatically —
 > you don't need to set anything else up in Firestore.
 
 ---
 
-## 2. Telegram (the alerts + login codes) 💬
+## 2. Telegram (the new-message alerts) 💬
 
-You need a **bot token** and a **chat id**.
+You need a **bot token** and a **chat id**. This is only used to text Kenna when
+someone submits the form (it is *not* used for logging in).
 
 **Create the bot:**
 1. In Telegram, search for **@BotFather** and open the chat.
@@ -84,6 +87,21 @@ Copy the output. That's your **`SESSION_SECRET`**.
 
 ---
 
+## 3b. Dashboard login (ADMIN_USERNAME / ADMIN_PASSWORD) 👤
+
+Choose the username and password Kenna will use to sign in at `/admin`.
+Pick anything you like — for example:
+
+```
+ADMIN_USERNAME = kenna
+ADMIN_PASSWORD = river-meadow-1605
+```
+
+> To change the password later, just edit the `ADMIN_PASSWORD` value in Vercel
+> and redeploy — no code changes needed.
+
+---
+
 ## 4. Deploy to Vercel ▲
 
 1. Push this repo to GitHub (already done if you're reading this on GitHub).
@@ -91,7 +109,7 @@ Copy the output. That's your **`SESSION_SECRET`**.
 3. **Add New… → Project → Import** this repository.
 4. Leave the framework as **Other** — no build command needed; it's a static site
    with serverless functions.
-5. Before clicking Deploy, open **Environment Variables** and add all four:
+5. Before clicking Deploy, open **Environment Variables** and add all six:
 
    | Name | Value |
    |------|-------|
@@ -99,6 +117,8 @@ Copy the output. That's your **`SESSION_SECRET`**.
    | `TELEGRAM_BOT_TOKEN` | from step 2 |
    | `TELEGRAM_CHAT_ID` | from step 2 |
    | `SESSION_SECRET` | from step 3 |
+   | `ADMIN_USERNAME` | from step 3b (e.g. `kenna`) |
+   | `ADMIN_PASSWORD` | from step 3b |
 
 6. Click **Deploy**. After a minute you'll get a live URL.
 
@@ -112,8 +132,8 @@ Copy the output. That's your **`SESSION_SECRET`**.
 1. Open your live site, scroll to **Contact**, send a test message.
    - Kenna's Telegram should ping within a few seconds. 🎉
 2. Go to `https://your-site.vercel.app/admin`.
-   - Click **Send me a login code** → a code arrives on Telegram.
-   - Enter it → you're in the CRM and can see the test message.
+   - Sign in with your `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
+   - You're in the CRM and can see the test message.
 3. In the CRM, try **Mark contacted**, **Archive**, **Reply** and **Delete**.
 
 ---
@@ -123,12 +143,14 @@ Copy the output. That's your **`SESSION_SECRET`**.
   **Archived** = done/old.
 - **Reply** opens Kenna's email app pre-addressed to the visitor.
 - Use the search box and the **All / New / Contacted / Archived** tabs to filter.
-- The login lasts 30 days on that device, then asks for a new code.
+- The login lasts 30 days on that device, then asks for the password again.
 
 ## Troubleshooting
 - **No Telegram message?** Make sure Kenna pressed **Start** on the bot (step 2.1),
   and that `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` are correct in Vercel.
-- **Can't log in / "Could not send the code"?** Same as above — it uses the same bot.
+- **Can't log in / "Incorrect username or password"?** Check `ADMIN_USERNAME`,
+  `ADMIN_PASSWORD` and `SESSION_SECRET` are set in Vercel, then redeploy. Values
+  are case-sensitive and must not have stray spaces.
 - **Form says "Could not save"?** Check `FIREBASE_SERVICE_ACCOUNT` is the full,
   valid JSON and Firestore is enabled, then redeploy.
 - After changing any environment variable you must **Redeploy** for it to take effect.

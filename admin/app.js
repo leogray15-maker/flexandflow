@@ -39,59 +39,38 @@ function setLoginMsg(text, kind = '') {
   el.className = 'msg' + (kind ? ' ' + kind : '');
 }
 
-async function requestCode(btn) {
-  btn.disabled = true;
-  setLoginMsg('Sending code…');
-  try {
-    const res = await api('/api/auth/request-code', { method: 'POST' });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data.ok) {
-      $('step-request').classList.add('hidden');
-      $('step-verify').classList.remove('hidden');
-      setLoginMsg('Code sent to your Telegram. Enter it above.', 'success');
-      $('codeInput').focus();
-    } else {
-      setLoginMsg(data.error || 'Could not send code.', 'error');
-    }
-  } catch {
-    setLoginMsg('Network error. Please try again.', 'error');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-async function verifyCode() {
-  const code = $('codeInput').value.trim();
-  if (!/^\d{6}$/.test(code)) {
-    setLoginMsg('Enter the 6-digit code.', 'error');
+async function login() {
+  const username = $('username').value.trim();
+  const password = $('password').value;
+  if (!username || !password) {
+    setLoginMsg('Enter your username and password.', 'error');
     return;
   }
-  $('verifyBtn').disabled = true;
-  setLoginMsg('Verifying…');
+  $('loginBtn').disabled = true;
+  setLoginMsg('Signing in…');
   try {
-    const res = await api('/api/auth/verify', {
+    const res = await api('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ username, password }),
     });
     const data = await res.json().catch(() => ({}));
     if (res.ok && data.ok) {
       setLoginMsg('');
+      $('password').value = '';
       showApp();
     } else {
-      setLoginMsg(data.error || 'Incorrect code.', 'error');
+      setLoginMsg(data.error || 'Incorrect username or password.', 'error');
     }
   } catch {
     setLoginMsg('Network error. Please try again.', 'error');
   } finally {
-    $('verifyBtn').disabled = false;
+    $('loginBtn').disabled = false;
   }
 }
 
-$('sendCodeBtn').addEventListener('click', (e) => requestCode(e.target));
-$('resendBtn').addEventListener('click', (e) => requestCode(e.target));
-$('verifyBtn').addEventListener('click', verifyCode);
-$('codeInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') verifyCode();
+$('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  login();
 });
 
 $('logoutBtn').addEventListener('click', async () => {

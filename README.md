@@ -1,46 +1,54 @@
 # Flex & Flow — Pilates & Yoga Studio
 
-A modern, responsive single-page website for **Flex & Flow**, a Pilates and yoga
-studio. Built as a fast, lightweight static site (plain HTML, CSS and
-JavaScript — no build step, no dependencies).
+A modern website for **Flex & Flow** with a contact form, Telegram alerts and a
+private CRM dashboard — all on free hosting.
 
-## Sections
-- **Hero** — headline, intro and clear calls to action
-- **Classes** — Pilates, Yoga and Beginner-friendly cards
-- **About** — "a studio for every body", all abilities, feel good & grow
-- **Pricing** — Pay as you go (£25), Gold membership (£200/mo unlimited), new client rate (£20)
-- **Offers** — first session £20, 3 for £50, bring a friend free
-- **Contact** — Name / Email / Message form
-- **Footer**
+➡️ **To get it live, follow [SETUP.md](./SETUP.md).**
 
-## Preview locally
-Just open `index.html` in a browser, or run a tiny local server:
+## What's included
+- **Public website** (`index.html`) — responsive single-page site: hero, classes,
+  about, pricing, new-client offers and a contact form.
+- **Contact backend** (`/api/contact`) — saves enquiries to Firestore and sends a
+  **Telegram text** to Kenna on every message.
+- **CRM dashboard** (`/admin`) — a mini CRM to read, search, mark
+  (new / contacted / archived), reply to and delete enquiries.
+- **Passwordless login** — Kenna signs in with a 6-digit code sent to her Telegram.
 
+## Tech (all free tiers)
+| Piece | Used for |
+|-------|----------|
+| **Vercel** | Hosting the site + serverless functions (`/api`) |
+| **Firebase / Firestore** | Storing messages |
+| **Telegram Bot API** | New-message alerts + login codes |
+
+No build step for the frontend; the only dependency is `firebase-admin` (installed
+automatically by Vercel).
+
+## Project structure
+```
+index.html, styles.css, script.js   → public website
+admin/                               → CRM dashboard (index.html + app.js)
+api/
+  contact.js                         → POST public: save message + Telegram alert
+  messages.js                        → GET  protected: list enquiries
+  messages/[id].js                   → PATCH/DELETE protected: status / remove
+  auth/request-code.js               → send login code via Telegram
+  auth/verify.js                     → verify code, start session
+  auth/logout.js, auth/me.js         → session helpers
+lib/                                 → firebase, telegram, auth helpers
+SETUP.md                             → step-by-step deployment guide
+```
+
+## Local development (optional)
 ```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000
+npm install
+npm i -g vercel      # one time
+vercel dev           # runs site + functions locally (needs the env vars from SETUP.md)
 ```
 
 ## Customising
-- **Text & prices** — edit `index.html` directly.
-- **Colours & fonts** — change the variables at the top of `styles.css`
-  (`:root { --cream, --sage, --terracotta, --gold ... }`).
-- **Photos** — the images currently use Unsplash URLs. Replace the URLs in
-  `index.html` (and the hero/card `background-image` rules) with Kenna's own
-  studio photos for a fully bespoke look. Self-hosting the images in an
-  `/images` folder is recommended before going live.
-
-## Contact form
-The form currently validates input and shows a confirmation message on the
-front end only — it does **not** send email yet. To receive real enquiries,
-wire the form up to a service such as:
-- [Formspree](https://formspree.io)
-- [Netlify Forms](https://docs.netlify.com/forms/setup/) (if hosted on Netlify)
-- or a custom backend endpoint.
-
-See the note in `script.js` for where to connect it.
-
-## Deploying
-Because it's a static site, you can host it free on:
-- **GitHub Pages**, **Netlify**, **Vercel**, or **Cloudflare Pages** — just
-  point them at this repository.
+- **Text & prices** — edit `index.html`.
+- **Colours & fonts** — the CSS variables at the top of `styles.css` (and in
+  `admin/index.html`).
+- **Photos** — currently Unsplash URLs; swap in Kenna's own studio photos before
+  going live (self-hosting them in an `/images` folder is recommended).

@@ -241,6 +241,7 @@ h1, h2, h3, h4 {
 }
 .field input:focus, .field textarea:focus { outline: none; border-color: var(--sage); background: var(--white); }
 .field textarea { resize: vertical; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
 .form-status { margin-top: 16px; font-size: 0.92rem; text-align: center; min-height: 1.2em; }
 .form-status.success { color: var(--sage-dark); }
 .form-status.error { color: var(--terracotta); }

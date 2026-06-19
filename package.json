@@ -1,0 +1,10 @@
+{
+  "name": "flexandflow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Flex & Flow Pilates studio site, contact backend and CRM dashboard",
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

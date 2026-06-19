@@ -51,13 +51,16 @@ if ('IntersectionObserver' in window) {
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
 
-form.addEventListener('submit', (e) => {
+const submitBtn = form.querySelector('button[type="submit"]');
+
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
   status.className = 'form-status';
 
   const name = form.name.value.trim();
   const email = form.email.value.trim();
   const message = form.message.value.trim();
+  const company = form.company ? form.company.value : '';
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   if (!name || !email || !message) {
@@ -71,11 +74,34 @@ form.addEventListener('submit', (e) => {
     return;
   }
 
-  // No backend wired up yet — this confirms the form works.
-  // Connect to a real handler (Formspree, Netlify Forms, email service) to receive messages.
-  status.textContent = `Thanks ${name}! Your message has been noted — we'll be in touch soon.`;
-  status.classList.add('success');
-  form.reset();
+  submitBtn.disabled = true;
+  const originalLabel = submitBtn.textContent;
+  submitBtn.textContent = 'Sending…';
+  status.textContent = '';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message, company }),
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.ok) {
+      status.textContent = `Thanks ${name}! Your message is on its way — we'll be in touch soon.`;
+      status.classList.add('success');
+      form.reset();
+    } else {
+      status.textContent = data.error || 'Something went wrong. Please try again.';
+      status.classList.add('error');
+    }
+  } catch (_) {
+    status.textContent = 'Network error. Please check your connection and try again.';
+    status.classList.add('error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalLabel;
+  }
 });
 
 // ===================== Footer year =====================

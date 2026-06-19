@@ -234,7 +234,9 @@
           <label for="message">Message <span>*</span></label>
           <textarea id="message" name="message" rows="5" required></textarea>
         </div>
-        <button type="submit" class="btn btn-full">Submit form</button>
+        <!-- Honeypot: hidden from people, tempting to bots -->
+        <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <button type="submit" class="btn btn-full">Send message</button>
         <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
     </div>
